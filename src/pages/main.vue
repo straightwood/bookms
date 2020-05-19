@@ -27,16 +27,20 @@
                     </Menu>
                 </Sider> -->
                 <Sider breakpoint="md" collapsible :collapsed-width="78" v-model="isCollapsed">
-                    <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses">
+                    <Menu active-name="1-1" theme="dark" width="auto" :class="menuitemClasses">
                         <MenuItem name="1-1" @click.native="handleManager">
                             <Icon type="ios-person"></Icon>
                             <span>管理员</span>
                         </MenuItem>
-                        <MenuItem name="1-2" @click.native="handleBook">
+                        <MenuItem name="1-2" @click.native="handleReader" >
+                            <Icon type="ios-person"></Icon>
+                            <span>读者</span>
+                        </MenuItem>
+                        <MenuItem name="1-3" @click.native="handleBook">
                             <Icon type="ios-book"></Icon>
                             <span>图书管理</span>
                         </MenuItem>
-                        <MenuItem name="1-3" @click.native="handleOption" >
+                        <MenuItem name="1-4" @click.native="handleOption" >
                             <Icon type="ios-bookmarks"></Icon>
                             <span>借还书操作</span>
                         </MenuItem>
@@ -77,12 +81,15 @@ export default {
         handleManager(){
             this.$router.push('./manager');
         },
+        handleReader(){
+            this.$router.push('./reader');
+        },
         handleBook(){
             this.$router.push('./book');
         },
         handleOption(){
             this.$router.push('./option');
-        },
+        }
     }
     
 }

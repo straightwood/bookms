@@ -2,16 +2,20 @@
 
     // session_start();
     // header('Content-Type:application/json; charset=utf-8');
+    session_start();
     require_once('connectvars.php');
-
-    // $username = $_POST["username"];
-    // $password = $_POST["password"];
 
     $data = json_decode(file_get_contents('php://input'),true);//转换数据格式
 
     $username = $data['username'];
     $password = $data["password"];
-    // echo("hello");
+
+    // if (!isset($_SESSION['username'])) {
+    //     if (isset($_COOKIE['username'])) {
+    //       $_SESSION['user_id'] = $_COOKIE['user_id'];
+    //       $_SESSION['username'] = $_COOKIE['username'];
+    //     }
+    // }
     
     if($username != '' && $password != ''){
         $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);

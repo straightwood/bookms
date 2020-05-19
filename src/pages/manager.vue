@@ -1,11 +1,30 @@
 <template>
   <div id="main">
         <div class="topButton">
-            <Button type="primary">新增</Button>
+            <Button type="primary" @click="addManager">新增</Button>
             <Button type="error">删除</Button>
             <Button >查找</Button>
         </div>
-        <Table border :columns="columns12" :data="data6">
+        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" 
+                v-if="showForm" :label-width="100"  inline>
+            <FormItem label="管理员编号" prop="manager_id">
+                <Input v-model="formValidate.manager_id" placeholder="Enter manager_id" />
+            </FormItem>
+            <FormItem label="姓名" prop="name">
+                <Input v-model="formValidate.name" placeholder="Enter name" />
+            </FormItem>
+            <FormItem label="初始密码" prop="password">
+                <Input v-model="formValidate.password" placeholder="Enter password" />
+            </FormItem>
+            <FormItem label="联系方式" prop="telephone">
+                <Input v-model="formValidate.telephone" placeholder="Enter telephone" />
+            </FormItem>
+            <FormItem>
+                <Button type="primary" @click="handleSubmit('formValidate')">确定</Button>
+                <Button @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
+            </FormItem>
+        </Form>
+        <Table border :columns="columns" :data="data">
            <template slot-scope="{ row }" slot="name"> <!-- ############## -->
                 <strong>{{ row.manager_id }}</strong>
             </template>
@@ -21,7 +40,28 @@
 export default {
     data(){
         return{
-            columns12: [
+            showForm: false,
+            formValidate: {
+                manager_id: '',
+                name: '',
+                password: '',
+                telephone: '',
+            },
+            ruleValidate: {
+                manager_id: [
+                    { required: true, message: 'The id cannot be empty', trigger: 'blur' }
+                ],
+                name: [
+                    { required: true, message: 'The name cannot be empty', trigger: 'blur' },
+                ],
+                password: [
+                    { required: true, message: 'The password cannot be empty', trigger: 'blur' }
+                ],
+                telephone: [
+                    { required: true, message: 'The telephone cannot be empty', trigger: 'blur' },
+                ],
+            },
+            columns: [
                 {
                     title: '管理员ID',
                     key: 'manager_id'
@@ -38,7 +78,7 @@ export default {
                     align: 'center'
                 }
             ],
-            data6: [
+            data: [
                 // {
                 //     name: 'testid1',
                 //     age: '管理员1',
@@ -65,27 +105,86 @@ export default {
         
     },
     mounted(){
-        this.show();
+        this.showList();
     },
     methods:{
-        show(){
+        showList(){
             fetch('api/bookms/server/manager/showList.php',{
             }).then((res)=>{
                 return res.json();
             }).then((res)=>{
-                this.data6 = res;
-                console.log(this.data6) // res是最终的结果
+                this.data = res;
+                // console.log(this.data) // res是最终的结果
             })
         },
-        // show (index) {
-        //     this.$Modal.info({
-        //         title: 'User Info',
-        //         content: `Name：${this.data6[index].name}<br>Age：${this.data6[index].age}<br>Address：${this.data6[index].address}`
-        //     })
-        // },
+        handleSubmit (name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    // this.$Message.success('Success!');
+                    fetch("api/bookms/server/manager/add.php",{
+                        method:"POST",
+                        headers:{
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body:JSON.stringify({
+                            // username:this.data[index],
+                            manager_id:this.formValidate.manager_id,
+                            name:this.formValidate.name,
+                            password:this.formValidate.password,
+                            telephone:this.formValidate.telephone,
+                        }),
+                        }).then(res=> { 
+                            return res.json();
+                        }).then(res=>{
+                            if(res[0].code == 1){
+                                this.$Message.success(res[0].message);//############操作后提示
+                                this.$refs[name].resetFields();
+                            }else{
+                                this.$Message.error(res[0].message);
+                            }
+                        });
+                } else {
+                    this.$Message.error('Fail!');
+                }
+            })
+        },
+        handleReset (name) {
+            this.$refs[name].resetFields();
+        },
+        addManager(){
+            this.showForm = true;
+        },
+        show (index) {
+            this.$Modal.info({
+                title: 'Manager Info',
+                content: `编号：${this.data[index].manager_id}<br>姓名：${this.data[index].name}<br>电话号码：${this.data[index].telephone}`
+            })
+        },
         remove (index) {
-            this.data6.splice(index, 1);
-            // console.log(this.data6.splice(index, 1)[0].name);
+            // this.data.splice(index, 1);
+            // console.log(this.data.splice(index, 1)[0].name);
+            // console.log(this.data[index].manager_id);
+            fetch("api/bookms/server/manager/delete.php",{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    // username:this.data[index],
+                    manager_id:this.data[index].manager_id,
+                }),
+                }).then(res=> { 
+                    return res.json();
+                }).then(res=>{
+                if(res[0].code == 1){
+                    this.$Message.success(res[0].message);
+                    this.data.splice(index, 1);
+                }else{
+                    this.$Message.error(res[0].message);
+                }
+            });
         }
     },
 }

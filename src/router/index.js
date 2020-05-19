@@ -5,6 +5,7 @@ import Main from '../pages/main'
 import Manager from '../pages/manager'
 import Book from '../pages/book'
 import option from '../pages/option'
+import Reader from '../pages/reader'
 
 Vue.use(Router)
 
@@ -39,6 +40,10 @@ export default new Router({
           path: '/option',
           name: 'option',
           component: option
+        },{
+          path: '/reader',
+          name: 'reader',
+          component: Reader
         }
       ]
     },
