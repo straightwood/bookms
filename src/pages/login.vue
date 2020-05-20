@@ -8,7 +8,7 @@
           </div>
           <Form ref="formInline" :model="formInline" :rules="ruleInline" style="width: 200px">
               <FormItem prop="user">
-                  <Input type="text" v-model="formInline.username" placeholder="Uername eg:1122">
+                  <Input type="text" v-model="formInline.username" placeholder="Uername eg:admin">
                       <Icon type="ios-person-outline" slot="prepend" />
                   </Input>
               </FormItem>

@@ -9,32 +9,17 @@
                     </div>
                 </Menu>
             </Header>
+
             <Layout>
-                <!-- <Sider hide-trigger :style="{background: '#fff'}">
-                    <Menu active-name="1-2" theme="light" width="auto" :open-names="['1']">
-                        <MenuItem name="1" @click="handleManager">
-                            <Icon type="ios-person"></Icon>
-                            管理员操作
-                        </MenuItem>
-                        <MenuItem name="2" @click="handleBook">
-                            <Icon type="ios-book"></Icon>
-                            图书操作
-                        </MenuItem>
-                        <MenuItem name="3" @click="handleOption">
-                            <Icon type="ios-bookmarks"></Icon>
-                            借还书操作                            
-                        </MenuItem>
-                    </Menu>
-                </Sider> -->
                 <Sider breakpoint="md" collapsible :collapsed-width="78" v-model="isCollapsed">
                     <Menu active-name="1-1" theme="dark" width="auto" :class="menuitemClasses">
                         <MenuItem name="1-1" @click.native="handleManager">
                             <Icon type="ios-person"></Icon>
                             <span>管理员</span>
                         </MenuItem>
-                        <MenuItem name="1-2" @click.native="handleReader" >
+                        <MenuItem name="1-2" @click.native="handleReader">
                             <Icon type="ios-person"></Icon>
-                            <span>读者</span>
+                            <span>读者信息</span>
                         </MenuItem>
                         <MenuItem name="1-3" @click.native="handleBook">
                             <Icon type="ios-book"></Icon>

@@ -7,12 +7,13 @@
 
     $data = json_decode(file_get_contents('php://input'),true);//转换数据格式
 
-    $manager_id = $data['manager_id'];
+    $reader_number = $data['reader_number'];
     $name = $data["name"];
-    $password = $data["password"];
+    $department = $data["department"];
+    $gender = $data["gender"];
     $telephone = $data["telephone"];
 
-    // $manager_id = "123123";
+    // $reader_number = "123123";
     // $name = "ggg";
     // $password = "123123";
     // $telephone = "1530000000";
@@ -24,18 +25,18 @@
     //     }
     // }
     
-    if($manager_id != '' && $name != '' && $password != '' && $telephone != ''){
+    if($reader_number != '' && $name != '' && $gender != ''){
         $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
         if($conn != null){
-            $sql = "select * FROM manager where manager_id = '$manager_id'";
+            $sql = "select * FROM reader where reader_number = '$reader_number'";
             $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql   
             $resNum = mysqli_num_rows($result);//从$result中取一行
 
             if($resNum==0){
-                $sql = "INSERT INTO manager (manager_id,name,password,telephone) VALUES ('$manager_id','$name','$password','$telephone')";
+                $sql = "INSERT INTO reader (reader_number,name,department,gender,telephone) VALUES ('$reader_number','$name','$department','$gender','$telephone')";
                 $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
 
-                $check = "select * FROM manager where manager_id = '$manager_id'";
+                $check = "select * FROM reader where reader_number = '$reader_number'";
                 $check_result = mysqli_query($conn, $check);//$conn->query($sql);//执行$sql   
                 $resNum = mysqli_num_rows($check_result);//从$result中取一行
                 if($resNum!=0){
@@ -46,7 +47,7 @@
 				    echo json_encode($result_array);
                 }
             }else{
-                $result_array[0] = ['code'=>'0','message'=>'管理员id已存在!'];
+                $result_array[0] = ['code'=>'0','message'=>'读者编号已存在!'];
                 echo json_encode($result_array);
             }
             mysqli_close($conn);

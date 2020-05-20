@@ -1,7 +1,7 @@
 <template>
   <div id="main">
         <div class="topButton">
-            <Button type="primary" @click="addManager" class="addBtn">新增</Button>
+            <Button type="primary" @click="addReader" class="addBtn">新增</Button>
             <!-- <Button type="error">批量删除</Button> -->
 
             <Form ref="formSearch" :model="formSearch" inline class="serchBox">
@@ -12,14 +12,20 @@
         </div>
         <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" 
                 v-if="showForm" :label-width="100"  inline>
-            <FormItem label="管理员账号" prop="manager_id">
-                <Input v-model="formValidate.manager_id" placeholder="Enter manager_id" />
+            <FormItem label="读者编号" prop="reader_number">
+                <Input v-model="formValidate.reader_number" placeholder="Enter reader_number" />
             </FormItem>
             <FormItem label="姓名" prop="name">
                 <Input v-model="formValidate.name" placeholder="Enter name" />
             </FormItem>
-            <FormItem label="初始密码" prop="password">
-                <Input v-model="formValidate.password" placeholder="Enter password" />
+            <FormItem label="所属学院" prop="department">
+                <Input v-model="formValidate.department" placeholder="Enter department" />
+            </FormItem>
+            <FormItem label="性别" prop="gender">
+                <!-- <Input v-model="formValidate.telephone" placeholder="Enter gender" /> -->
+                <Select v-model="formValidate.gender" style="width:200px">
+                  <Option v-for="item in genderList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
             </FormItem>
             <FormItem label="联系方式" prop="telephone">
                 <Input v-model="formValidate.telephone" placeholder="Enter telephone" />
@@ -32,7 +38,7 @@
         </Form>
         <!-- <Table border :columns="columns" :data="data">
            <template slot-scope="{ row }" slot="name"> 
-                <strong>{{ row.manager_id }}</strong>
+                <strong>{{ row.reader_number }}</strong>
             </template>
             <template slot-scope="{ row, index }" slot="action">
                 <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看</Button>
@@ -45,8 +51,6 @@
             :columns="columns"
             border
         ></Table>
-        <br>
-
   </div>
 </template>
 
@@ -62,30 +66,37 @@ export default {
             formSearch: {
                 content:''
             },
+            genderList: [
+              {
+                value: '男',
+                label: '男'
+              },{
+                value: '女',
+                label: '女'
+              }
+            ],
             formValidate: {
-                manager_id: '',
+                reader_number: '',
                 name: '',
-                password: '',
+                department: '',
+                gender: '',
                 telephone: '',
             },
             ruleValidate: {
-                manager_id: [
-                    { required: true, message: 'The id cannot be empty', trigger: 'blur' }
+                reader_number: [
+                    { required: true, message: 'The reader_number cannot be empty', trigger: 'blur' }
                 ],
                 name: [
                     { required: true, message: 'The name cannot be empty', trigger: 'blur' },
                 ],
-                password: [
-                    { required: true, message: 'The password cannot be empty', trigger: 'blur' }
-                ],
-                telephone: [
-                    { required: true, message: 'The telephone cannot be empty', trigger: 'blur' },
+                gender: [
+                    { required: true, message: 'The gender cannot be empty', trigger: 'blur' }
                 ],
             },
             // columns: [
             //     {
             //         title: '管理员ID',
-            //         key: 'manager_id'
+            //         key: 'reader_number'
             //     },{
             //         title: '姓名',
             //         key: 'name'
@@ -101,16 +112,18 @@ export default {
             // ],
             
             editTableIndex: -1,
-            editId: '',
+            editNumber: '',
             editName: '',
+            editDepartment: '',
+            editGender: '',
             editTelephone: '',
             columns:[
             {
-                title: '管理员账号',
-                key: 'manager_id',
+                title: '读者编号',
+                key: 'reader_number',
                 // id不可更改
                 // render: (h, { row, index }) => {
-                // return this.renderTableColumn('editId', 'manager_id', h, { row, index })
+                // return this.renderTableColumn('editNumber', 'reader_number', h, { row, index })
                 // }
             },
             {
@@ -118,6 +131,20 @@ export default {
                 key: 'name',
                 render: (h, { row, index }) => {
                 return this.renderTableColumn('editName', 'name', h, { row, index })
+                }
+            },
+            {
+                title: '学院',
+                key: 'department',
+                render: (h, { row, index }) => {
+                return this.renderTableColumn('editDepartment', 'department', h, { row, index })
+                }
+            },
+            {
+                title: '性别',
+                key: 'gender',
+                render: (h, { row, index }) => {
+                return this.renderTableColumn('editGender', 'gender', h, { row, index })
                 }
             },
             {
@@ -142,12 +169,15 @@ export default {
                                 on: {
                                 click: () => {
                                     //id不可更改
-                                    this.data[index].manager_id = this.data[index].manager_id
+                                    this.data[index].reader_number = this.data[index].reader_number
                                     this.data[index].name = this.editName
+                                    this.data[index].department = this.editDepartment
+                                    this.data[index].gender = this.editGender
                                     this.data[index].telephone = this.editTelephone
                                     this.editTableIndex = -1
                                     // 在此处配置异步提交
-                                    fetch("api/bookms/server/manager/edit.php",{
+                                    if(editNumber!=''&&editName!=''&&editGender!=''){
+                                      fetch("api/bookms/server/reader/edit.php",{
                                         method:"POST",
                                         headers:{
                                             'Accept': 'application/json',
@@ -155,20 +185,27 @@ export default {
                                         },
                                         body:JSON.stringify({
                                             // username:this.data[index],
-                                            manager_id:this.data[index].manager_id,
-                                            name:this.data[index].name,
-                                            telephone:this.data[index].telephone,
+                                            reader_number: this.data[index].reader_number,
+                                            name: this.data[index].name,
+                                            department: this.data[index].editDepartment,
+                                            gender: this.data[index].editGender,
+                                            telephone: this.data[index].telephone,
                                         }),
                                         }).then(res=> { 
                                             return res.json();
                                         }).then(res=>{
                                         if(res[0].code == 1){
+                                          console.log(55555)
                                             this.$Message.success(res[0].message);
                                         }else{
                                             this.$Message.error(res[0].message);
                                         }
-                                    });
-                                }
+                                      });
+                                    }else{
+                                      this.$Message.error("姓名、性别为必填项！");
+                                    }
+                                    
+                                  }
                                 }
                             }, '保存'),
                             h('Button', {
@@ -193,9 +230,6 @@ export default {
                                 },
                                 on: {
                                     click: () => {
-                                    // this.editName = row.name
-                                    // this.editName = row.code
-                                    // this.editRemark = row.remark
                                     this.editTableIndex = index
                                     }
                                 }
@@ -213,15 +247,14 @@ export default {
                                         title: '提示',
                                         content: '确认要删除该行吗？',
                                         onOk: () => {
-                                            fetch("api/bookms/server/manager/delete.php",{
+                                            fetch("api/bookms/server/reader/delete.php",{
                                                 method:"POST",
                                                 headers:{
                                                     'Accept': 'application/json',
                                                     'Content-Type': 'application/json',
                                                 },
                                                 body:JSON.stringify({
-                                                    // username:this.data[index],
-                                                    manager_id:this.data[index].manager_id,
+                                                    reader_number:this.data[index].reader_number,
                                                 }),
                                                 }).then(res=> { 
                                                     return res.json();
@@ -251,37 +284,24 @@ export default {
     },
     mounted(){
         this.showList();
-        // this.totalNum();
     },
     computed:{
-        tableData(){
+      //模糊搜索
+      tableData(){
         const search=this.search;
         if(search){
-            // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
-            // 注意： filter() 不会对空数组进行检测。
-            // 注意： filter() 不会改变原始数组。
             return this.data.filter(data => {
-                // some() 方法用于检测数组中的元素是否满足指定条件;
-                // some() 方法会依次执行数组的每个元素：
-                // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
-                // 如果没有满足条件的元素，则返回false。
-                // 注意： some() 不会对空数组进行检测。
-                // 注意： some() 不会改变原始数组。
                 return Object.keys(data).some(key => {
-                //Object.keys()---如果处理对象，将返回一个可进行枚举的属性数组，注意，是返回一个数组，是通过属性名组成的数组
-                //Object.keys()---参数：要返回其枚举自身属性的对象；  返回值：一个表示给定对象的所有可枚举属性的字符串数组
-                // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
-                // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
                     return String(data[key]).toLowerCase().indexOf(search) > -1
                 })
             })
         }
-            return this.data
-        }
+        return this.data;
+      }
     },
     methods:{
         showList(){
-            fetch('api/bookms/server/manager/showList.php',{
+            fetch('api/bookms/server/reader/showList.php',{
             }).then((res)=>{
                 return res.json();
             }).then((res)=>{
@@ -296,17 +316,17 @@ export default {
             this.$refs[name].validate((valid) => {
                 if (valid) {
                     // this.$Message.success('Success!');
-                    fetch("api/bookms/server/manager/add.php",{
+                    fetch("api/bookms/server/reader/add.php",{
                         method:"POST",
                         headers:{
                             'Accept': 'application/json',
                             'Content-Type': 'application/json',
                         },
                         body:JSON.stringify({
-                            // username:this.data[index],
-                            manager_id:this.formValidate.manager_id,
+                            reader_number:this.formValidate.reader_number,
                             name:this.formValidate.name,
-                            password:this.formValidate.password,
+                            department:this.formValidate.department,
+                            gender:this.formValidate.gender,
                             telephone:this.formValidate.telephone,
                         }),
                         }).then(res=> { 
@@ -317,9 +337,9 @@ export default {
                                 this.$refs[name].resetFields();
                                 //###############################
                                 // var info = {
-                                //     manager_id:this.formValidate.manager_id,
+                                //     reader_number:this.formValidate.reader_number,
                                 //     name:this.formValidate.name,
-                                //     password:this.formValidate.password,
+                                //     department:this.formValidate.department,
                                 //     telephone:this.formValidate.telephone,
                                 // }
                                 // this.data.push(info);
@@ -340,40 +360,30 @@ export default {
         handleReset (name) {
             this.$refs[name].resetFields();
         },
-        addManager(){
+        addReader(){
             this.showForm = true;
         },
-        // show (index) {
-        //     this.$Modal.info({
-        //         title: 'Manager Info',
-        //         content: `编号：${this.data[index].manager_id}<br>姓名：${this.data[index].name}<br>电话号码：${this.data[index].telephone}`
-        //     })
+        // remove (index) {
+        //     fetch("api/bookms/server/manager/delete.php",{
+        //         method:"POST",
+        //         headers:{
+        //             'Accept': 'application/json',
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body:JSON.stringify({
+        //             reader_number:this.data[index].reader_number,
+        //         }),
+        //         }).then(res=> { 
+        //             return res.json();
+        //         }).then(res=>{
+        //         if(res[0].code == 1){
+        //             this.$Message.success(res[0].message);
+        //             this.data.splice(index, 1);
+        //         }else{
+        //             this.$Message.error(res[0].message);
+        //         }
+        //     });
         // },
-        remove (index) {
-            // this.data.splice(index, 1);
-            // console.log(this.data.splice(index, 1)[0].name);
-            // console.log(this.data[index].manager_id);
-            fetch("api/bookms/server/manager/delete.php",{
-                method:"POST",
-                headers:{
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body:JSON.stringify({
-                    // username:this.data[index],
-                    manager_id:this.data[index].manager_id,
-                }),
-                }).then(res=> { 
-                    return res.json();
-                }).then(res=>{
-                if(res[0].code == 1){
-                    this.$Message.success(res[0].message);
-                    this.data.splice(index, 1);
-                }else{
-                    this.$Message.error(res[0].message);
-                }
-            });
-        },
         renderTableColumn (editname, columnName, h, { row, index }) {
             let edit
             if (this.editTableIndex === index) {
@@ -407,3 +417,4 @@ export default {
     width:300px;
 }
 </style>
+
