@@ -94,6 +94,7 @@ export default {
             search:'',
             showForm: false,//增加信息的表单
             showEditForm:false,//编辑信息的表单
+            editIndex:-1,//正在编辑的条目下标
             data: [],
             formSearch: {
                 content:''
@@ -183,15 +184,18 @@ export default {
             }).then((res)=>{
                 this.data = res[0];
                 this.totalNum = res[1];
-                console.log(this.data) // res是最终的结果
             });
-            // console.log(1111)//#########有输出 列表不更新
         },
         handleSubmit (name) {
-            var _this = this;
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                    // this.$Message.success('Success!');
+                    var info = {
+                        reader_number:this.formValidate.reader_number,
+                        name:this.formValidate.name,
+                        gender:this.formValidate.gender,
+                        department:this.formValidate.department,
+                        telephone:this.formValidate.telephone,
+                    }
                     fetch("api/bookms/server/reader/add.php",{
                         method:"POST",
                         headers:{
@@ -210,17 +214,8 @@ export default {
                         }).then(res=>{
                             if(res[0].code == 1){
                                 this.$Message.success(res[0].message);
-                                this.$refs[name].resetFields();
-                                //###############################
-                                // var info = {
-                                //     reader_number:this.formValidate.reader_number,
-                                //     name:this.formValidate.name,
-                                //     department:this.formValidate.department,
-                                //     telephone:this.formValidate.telephone,
-                                // }
-                                // this.data.push(info);
-
-                                _this.$options.methods.showList();
+                                this.$refs[name].resetFields();                           
+                                this.data.push(info);
                             }else{
                                 this.$Message.error(res[0].message);
                             }
@@ -231,6 +226,13 @@ export default {
             })
         },
         handleEditSubmit(){
+            var info = {
+                reader_number:this.formEdit.reader_number,
+                name:this.formEdit.name,
+                gender:this.formEdit.gender,
+                department:this.formEdit.department,
+                telephone:this.formEdit.telephone,
+            }
             fetch("api/bookms/server/reader/edit.php",{
                 method:"POST",
                 headers:{
@@ -249,6 +251,9 @@ export default {
                 }).then(res=>{
                 if(res[0].code == 1){
                     this.$Message.success(res[0].message);
+                    // this.data[this.editIndex] = info;//#############
+                    // console.log(info.gender)
+                    // console.log(this.data[this.editIndex].gender)
                 }else{
                     this.$Message.error(res[0].message);
                 }
@@ -278,6 +283,7 @@ export default {
         },
         edit(index){
             this.showEditForm = true;
+            this.editIndex = index;
             // console.log("未完成");
             this.formEdit.reader_number = this.data[index].reader_number;
             this.formEdit.name = this.data[index].name;

@@ -3,7 +3,10 @@
         <Layout>
             <Header>
                 <Menu mode="horizontal" theme="dark" active-name="1">
-                    <div class="layout-logo" style="color:white">图书管理系统</div>
+                    <div class="layout-logo" style="color:white">
+                        <Icon type="md-paper" />
+                        图书管理系统
+                    </div>
                     <div class="layout-nav">
                         <Icon type="ios-power" style="color:white" />
                     </div>
@@ -12,20 +15,20 @@
 
             <Layout>
                 <Sider breakpoint="md" collapsible :collapsed-width="78" v-model="isCollapsed">
-                    <Menu active-name="1-1" theme="dark" width="auto" :class="menuitemClasses">
-                        <MenuItem name="1-1" @click.native="handleManager">
+                    <Menu :active-name="activeName" theme="dark" width="auto" :class="menuitemClasses">
+                        <MenuItem name="manager" @click.native="handleManager">
                             <Icon type="ios-person"></Icon>
                             <span>管理员</span>
                         </MenuItem>
-                        <MenuItem name="1-2" @click.native="handleReader">
-                            <Icon type="ios-person"></Icon>
+                        <MenuItem name="reader" @click.native="handleReader">
+                            <Icon type="ios-people"></Icon>
                             <span>读者信息</span>
                         </MenuItem>
-                        <MenuItem name="1-3" @click.native="handleBook">
+                        <MenuItem name="book" @click.native="handleBook">
                             <Icon type="ios-book"></Icon>
                             <span>图书管理</span>
                         </MenuItem>
-                        <MenuItem name="1-4" @click.native="handleOption" >
+                        <MenuItem name="option" @click.native="handleOption" >
                             <Icon type="ios-bookmarks"></Icon>
                             <span>借还书操作</span>
                         </MenuItem>
@@ -51,7 +54,8 @@
 export default {
     data () {
         return {
-            isCollapsed: false
+            isCollapsed: false,
+            activeName:'manager'
         };
     },
     computed: {
@@ -62,6 +66,13 @@ export default {
             ]
         }
     },
+    mounted(){
+            // console.log(this.$route.path.slice(1))
+            // this.$nextTick(()=>{
+                this.activeName = this.$route.path.slice(1)
+                // this.$refs.activeName.updateActiveName()
+            // })
+        },
     methods:{
         handleManager(){
             this.$router.push('./manager');
@@ -89,7 +100,7 @@ export default {
     overflow: hidden;
 }
 .layout-logo{
-    font-size: 20px;
+    font-size: 22px;
     width: 200px;
     height: 30px;
     float: left;
@@ -99,6 +110,9 @@ export default {
     width: 10px;
     margin: 0 auto;
     margin-right: 10px;
+}
+.ivu-layout-header{
+    padding: 0 25px;
 }
 .layout-header-bar{
     background: #fff;

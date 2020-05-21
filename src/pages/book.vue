@@ -1,12 +1,361 @@
 <template>
-  <div>book</div>
+  <div id="main">
+        <div class="topButton">
+            <Button type="primary" @click="addReader" class="addBtn">新增</Button>
+            <!-- <Button type="error">批量删除</Button> -->
+
+            <Form ref="formSearch" :model="formSearch" inline class="serchBox">
+                <FormItem prop="content">
+                    <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
+                </FormItem>
+            </Form>
+        </div>
+
+        <!-- 新增 -->
+        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" 
+                v-if="showForm" :label-width="100"  inline>
+            <FormItem label="图书编号" prop="book_number">
+                <Input v-model="formValidate.book_number" placeholder="Enter book_number" />
+            </FormItem>
+            <FormItem label="类别" prop="category">
+                <Input v-model="formValidate.category" placeholder="Enter category" />
+            </FormItem>
+            <FormItem label="书名" prop="book_name">
+                <Input v-model="formValidate.book_name" placeholder="Enter book_name" />
+            </FormItem>
+            <FormItem label="出版社" prop="publisher">
+                <Input v-model="formValidate.publisher" placeholder="Enter publisher" />
+            </FormItem>
+            <FormItem label="作者" prop="author">
+                <Input v-model="formValidate.author" placeholder="Enter author" />
+            </FormItem>
+            <FormItem label="价格" prop="price">
+                <Input v-model="formValidate.price" placeholder="Enter price" />
+            </FormItem>
+            <FormItem label="总藏书量" prop="book_total">
+                <Input v-model="formValidate.book_total" placeholder="Enter book_total" />
+            </FormItem>
+            <FormItem label="库存" prop="inventory">
+                <Input v-model="formValidate.inventory" placeholder="Enter inventory" />
+            </FormItem>
+            <FormItem>
+                <Button type="primary" @click="handleSubmit('formValidate')">确定</Button>
+                <Button @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
+                <Button @click="handleCancel()" style="margin-left: 8px">取消</Button>
+            </FormItem>
+        </Form>
+
+        <!-- 编辑 -->
+        <Form ref="formEdit" :model="formEdit" :rules="ruleValidate" :label-width="100"  
+                v-if="showEditForm" inline>
+            <FormItem label="图书编号" prop="book_number">
+                <Input v-model="formEdit.book_number" :disabled="true" placeholder="Enter book_number" />
+            </FormItem>
+            <FormItem label="类别" prop="category">
+                <Input v-model="formEdit.category" placeholder="Enter category" />
+            </FormItem>
+            <FormItem label="书名" prop="book_name">
+                <Input v-model="formEdit.book_name" placeholder="Enter book_name" />
+            </FormItem>
+            <FormItem label="出版社" prop="publisher">
+                <Input v-model="formEdit.publisher" placeholder="Enter publisher" />
+            </FormItem>
+            <FormItem label="作者" prop="author">
+                <Input v-model="formEdit.author" placeholder="Enter author" />
+            </FormItem>
+            <FormItem label="联系方式" prop="price">
+                <Input v-model="formEdit.price" placeholder="Enter price" />
+            </FormItem>
+            <FormItem label="总藏书量" prop="book_total">
+                <Input v-model="formEdit.book_total" placeholder="Enter book_total" />
+            </FormItem>
+            <FormItem label="库存" prop="inventory">
+                <Input v-model="formEdit.inventory" placeholder="Enter inventory" />
+            </FormItem>
+            <FormItem>
+                <Button type="primary" @click="handleEditSubmit('formEdit')">确定</Button>
+                <Button @click="handleReset('formEdit')" style="margin-left: 8px">重置</Button>
+                <Button @click="handleEditCancel()" style="margin-left: 8px">取消</Button>
+            </FormItem>
+        </Form>
+
+        <!-- 表格 -->
+        <Table border :columns="columns" :data="tableData">
+           <template slot-scope="{ row }" slot="book_name"> 
+                <strong>{{ row.book_number }}</strong>
+            </template>
+            <template slot-scope="{ row, index }" slot="action">
+                <!-- <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看</Button> -->
+                <Button type="primary" size="small" @click="edit(index)">编辑</Button>
+                <Button type="error" size="small" @click="remove(index)">删除</Button>
+            </template>
+        </Table>
+        <!-- <Table
+            :data="tableData"
+            :columns="columns"
+            border
+        ></Table> -->
+  </div>
 </template>
 
 <script>
 export default {
-
+    data(){
+        return{
+            msg: '',
+            search:'',
+            showForm: false,//增加信息的表单
+            showEditForm:false,//编辑信息的表单
+            data: [],
+            formSearch: {
+                content:''
+            },
+            formEdit: {
+                book_number: '',
+                category:'',
+                book_name: '',
+                publisher: '',
+                author: '',
+                price: '',
+                book_total:'',
+                inventory:'',
+            },
+            formValidate: {
+                book_number: '',
+                category:'',
+                book_name: '',
+                publisher: '',
+                author: '',
+                price: '',
+                book_total:'',
+                inventory:'',
+            },
+            ruleValidate: {
+                book_number: [
+                    { required: true, message: 'The book_number cannot be empty', trigger: 'blur' }
+                ],
+                book_name: [
+                    { required: true, message: 'The book_name cannot be empty', trigger: 'blur' },
+                ],
+                publisher: [
+                    { required: true, message: 'The publisher cannot be empty', trigger: 'blur' }
+                ],
+                price: [
+                    { type :'number', message:　'请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
+                ],
+                book_total: [
+                    { required: true, message: 'The book_total cannot be empty', trigger: 'blur' },
+                    { type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
+                ],
+                inventory: [
+                    { required: true, message: 'The inventory cannot be empty', trigger: 'blur' },
+                    { type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
+                ],
+            },
+            columns: [
+                {
+                    title: '图书编号',
+                    key: 'book_number'
+                },{
+                    title: '类别',
+                    key: 'category'
+                },{
+                    title: '书名',
+                    key: 'book_name'
+                },{
+                    title: '出版社',
+                    key: 'publisher'
+                },{
+                    title: '作者',
+                    key: 'author'
+                },{
+                    title: '价格',
+                    key: 'price'
+                },{
+                    title: '总藏书量',
+                    key: 'book_total'
+                },{
+                    title: '库存',
+                    key: 'inventory'
+                },{
+                    title: 'Action',
+                    slot: 'action',
+                    width: 150,
+                    align: 'center'
+                }
+            ],
+        }
+        
+    },
+    mounted(){
+        this.showList();
+    },
+    computed:{
+      //模糊搜索
+      tableData(){
+        const search=this.search;
+        if(search){
+            return this.data.filter(data => {
+                return Object.keys(data).some(key => {
+                    return String(data[key]).toLowerCase().indexOf(search) > -1
+                })
+            })
+        }
+        return this.data;
+      }
+    },
+    methods:{
+        showList(){
+            fetch('api/bookms/server/book/showList.php',{
+            }).then((res)=>{
+                return res.json();
+            }).then((res)=>{
+                this.data = res[0];
+                this.totalNum = res[1];
+                // console.log(this.data) // res是最终的结果
+            });
+            console.log(this.data)//#########有输出 列表不更新
+        },
+        handleSubmit (name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                  var info = {
+                      book_number:this.formValidate.book_number,
+                      category:this.formValidate.category,
+                      book_name:this.formValidate.book_name,
+                      author:this.formValidate.author,
+                      price:this.formValidate.price,
+                      book_total:this.formValidate.book_total,
+                      inventory:this.formValidate.inventory,
+                  };
+                  fetch("api/bookms/server/book/add.php",{
+                      method:"POST",
+                      headers:{
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json',
+                      },
+                      body:JSON.stringify({
+                          book_number:this.formValidate.book_number,
+                          category:this.formValidate.category,
+                          book_name:this.formValidate.book_name,
+                          author:this.formValidate.author,
+                          publisher:this.formValidate.publisher,
+                          price:this.formValidate.price,
+                          book_total:this.formValidate.book_total,
+                          inventory:this.formValidate.inventory,
+                      }),
+                      }).then(res=> { 
+                          return res.json();
+                      }).then(res=>{
+                          if(res[0].code == 1){
+                              this.$Message.success(res[0].message);
+                              this.$refs[name].resetFields();
+                              this.data.push(info); //############声明info位置问题
+                          }else{
+                              this.$Message.error(res[0].message);
+                          }
+                      });
+                } else {
+                    this.$Message.error('请完成必填项!');
+                }
+            })
+        },
+        handleEditSubmit(){
+            fetch("api/bookms/server/book/edit.php",{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    book_number:this.formEdit.book_number,
+                    category:this.formEdit.category,
+                    book_name:this.formEdit.book_name,
+                    author:this.formEdit.author,
+                    publisher:this.formEdit.publisher,
+                    price:this.formEdit.price,
+                    book_total:this.formEdit.book_total,
+                    inventory:this.formEdit.inventory,
+                }),
+                }).then(res=> { 
+                    return res.json();
+                }).then(res=>{
+                if(res[0].code == 1){
+                    this.$Message.success(res[0].message);
+                }else{
+                    this.$Message.error(res[0].message);
+                }
+            });
+        },
+        handleCancel(){
+            this.showForm = false;
+        },
+        handleEditCancel(){
+            this.showEditForm = false;
+        },
+        handleReset (name) {
+            this.$refs[name].resetFields();
+        },
+        handleEditReset (name) {//#############重置表单未完成
+            console.log("重置表单未完成")
+            // this.formEdit={
+            //     book_number:'',
+            //     category:'',
+            //     book_name: '',
+            //     author: '',
+            //     publisher: '',
+            //     price: '',
+            //     book_total: '',
+            //     inventory: '',
+            // }
+        },
+        addReader(){
+            this.showForm = true;
+        },
+        edit(index){
+            this.showEditForm = true;//显示表单
+            this.formEdit.book_number = this.data[index].book_number;
+            this.formEdit.category = this.data[index].category;
+            this.formEdit.book_name = this.data[index].book_name;
+            this.formEdit.author = this.data[index].author;
+            this.formEdit.publisher = this.data[index].publisher;
+            this.formEdit.price = this.data[index].price;
+            this.formEdit.book_total = this.data[index].book_total;
+            this.formEdit.inventory = this.data[index].inventory;
+        },
+        remove (index) {
+            fetch("api/bookms/server/book/delete.php",{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    book_number:this.data[index].book_number,
+                }),
+                }).then(res=> { 
+                    return res.json();
+                }).then(res=>{
+                if(res[0].code == 1){
+                    this.$Message.success(res[0].message);
+                    this.data.splice(index, 1);
+                }else{
+                    this.$Message.error(res[0].message);
+                }
+            });
+        },
+    },
 }
 </script>
 
-<style>
+<style scoped>
+.topButton{
+    margin-bottom: 20px;
+    display: flex;
+    justify-content:space-between;
+}
+.searchBox{
+    width:300px;
+}
 </style>
+

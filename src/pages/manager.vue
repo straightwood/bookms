@@ -292,10 +292,14 @@ export default {
             // console.log(1111)//#########有输出 列表不更新
         },
         handleSubmit (name) {
-            var _this = this;
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                    // this.$Message.success('Success!');
+                    var info = {
+                        manager_id:this.formValidate.manager_id,
+                        name:this.formValidate.name,
+                        password:this.formValidate.password,
+                        telephone:this.formValidate.telephone,
+                    }
                     fetch("api/bookms/server/manager/add.php",{
                         method:"POST",
                         headers:{
@@ -314,17 +318,8 @@ export default {
                         }).then(res=>{
                             if(res[0].code == 1){
                                 this.$Message.success(res[0].message);
-                                this.$refs[name].resetFields();
-                                //###############################
-                                // var info = {
-                                //     manager_id:this.formValidate.manager_id,
-                                //     name:this.formValidate.name,
-                                //     password:this.formValidate.password,
-                                //     telephone:this.formValidate.telephone,
-                                // }
-                                // this.data.push(info);
-
-                                // _this.$options.methods.showList();
+                                this.$refs[name].resetFields();                               
+                                this.data.push(info);
                             }else{
                                 this.$Message.error(res[0].message);
                             }
