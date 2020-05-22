@@ -11,7 +11,7 @@ import Reader from '../pages/reader'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -50,4 +50,21 @@ export default new Router({
       ]
     },
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.path === '/index') {
+    next();
+  } else {
+    let token = localStorage.getItem('Authorization');
+ 
+    if (token === null || token === '') {
+      next('/index');
+    } else {
+      next();//#################index意思
+    }
+  }
+});
+ 
+
+export default router;

@@ -28,9 +28,12 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
         data () {
             return {
+                userToken:'',
                 formInline: {
                     username: '',
                     password: ''
@@ -47,6 +50,7 @@ export default {
             }
         },
         methods: {
+            ...mapMutations(['changeLogin']),//向vuex的mutations属性派发一个changeLogin事件
             handleSubmit(name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
@@ -55,8 +59,10 @@ export default {
                         headers:{
                           'Accept': 'application/json',
                           'Content-Type': 'application/json',
+                          // 'Authorization':localStorage.getItem('token')
                         },
                         body:JSON.stringify({
+                          Authorization:'',
                           username:this.formInline.username,
                           password:this.formInline.password,
                         }),
@@ -64,6 +70,9 @@ export default {
                         return res.json()
                       }).then(res=>{
                         if(res[0].code == 1){
+                          this.userToken = res[0].token;
+                          this.changeLogin({ Authorization: this.userToken });
+                          console.log(this.userToken);
                           this.$Message.success(res[0].message);
                           this.$router.push('/main')
                         }else{

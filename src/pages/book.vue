@@ -4,10 +4,8 @@
             <Button type="primary" @click="addReader" class="addBtn">新增</Button>
             <!-- <Button type="error">批量删除</Button> -->
 
-            <Form ref="formSearch" :model="formSearch" inline class="serchBox">
-                <FormItem prop="content">
-                    <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
-                </FormItem>
+            <Form class="searchBox">
+                <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
             </Form>
         </div>
 
@@ -107,9 +105,6 @@ export default {
             showForm: false,//增加信息的表单
             showEditForm:false,//编辑信息的表单
             data: [],
-            formSearch: {
-                content:''
-            },
             formEdit: {
                 book_number: '',
                 category:'',

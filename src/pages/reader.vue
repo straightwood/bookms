@@ -3,11 +3,8 @@
         <div class="topButton">
             <Button type="primary" @click="addReader" class="addBtn">新增</Button>
             <!-- <Button type="error">批量删除</Button> -->
-
-            <Form ref="formSearch" :model="formSearch" inline class="serchBox">
-                <FormItem prop="content">
-                    <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
-                </FormItem>
+            <Form class="searchBox">
+                <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
             </Form>
         </div>
 
@@ -96,9 +93,6 @@ export default {
             showEditForm:false,//编辑信息的表单
             editIndex:-1,//正在编辑的条目下标
             data: [],
-            formSearch: {
-                content:''
-            },
             genderList: [
               {
                 value: '男',
@@ -203,6 +197,7 @@ export default {
                             'Content-Type': 'application/json',
                         },
                         body:JSON.stringify({
+                            Authorization:localStorage.getItem('token'),//token
                             reader_number:this.formValidate.reader_number,
                             name:this.formValidate.name,
                             department:this.formValidate.department,
@@ -212,12 +207,17 @@ export default {
                         }).then(res=> { 
                             return res.json();
                         }).then(res=>{
-                            if(res[0].code == 1){
-                                this.$Message.success(res[0].message);
-                                this.$refs[name].resetFields();                           
-                                this.data.push(info);
+                            if(res[1].code==1){
+                                if(res[0].code == 1){
+                                    this.$Message.success(res[0].message);
+                                    this.$refs[name].resetFields();                           
+                                    this.data.push(info);
+                                }else{
+                                    this.$Message.error(res[0].message);
+                                }
                             }else{
-                                this.$Message.error(res[0].message);
+                                console.log(res);
+                                this.$router.push('./index');
                             }
                         });
                 } else {

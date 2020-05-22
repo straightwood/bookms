@@ -3,11 +3,8 @@
         <div class="topButton">
             <Button type="primary" @click="addManager" class="addBtn">新增</Button>
             <!-- <Button type="error">批量删除</Button> -->
-
-            <Form ref="formSearch" :model="formSearch" inline class="serchBox">
-                <FormItem prop="content">
-                    <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
-                </FormItem>
+            <Form class="searchBox">
+                <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
             </Form>
         </div>
         <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" 
@@ -57,11 +54,8 @@ export default {
             msg: '',
             search:'',
             showForm: false,//增加信息的表单
-
+            userToken:'',
             data: [],
-            formSearch: {
-                content:''
-            },
             formValidate: {
                 manager_id: '',
                 name: '',
@@ -255,27 +249,27 @@ export default {
     },
     computed:{
         tableData(){
-        const search=this.search;
-        if(search){
-            // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
-            // 注意： filter() 不会对空数组进行检测。
-            // 注意： filter() 不会改变原始数组。
-            return this.data.filter(data => {
-                // some() 方法用于检测数组中的元素是否满足指定条件;
-                // some() 方法会依次执行数组的每个元素：
-                // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
-                // 如果没有满足条件的元素，则返回false。
-                // 注意： some() 不会对空数组进行检测。
-                // 注意： some() 不会改变原始数组。
-                return Object.keys(data).some(key => {
-                //Object.keys()---如果处理对象，将返回一个可进行枚举的属性数组，注意，是返回一个数组，是通过属性名组成的数组
-                //Object.keys()---参数：要返回其枚举自身属性的对象；  返回值：一个表示给定对象的所有可枚举属性的字符串数组
-                // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
-                // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
-                    return String(data[key]).toLowerCase().indexOf(search) > -1
+            const search=this.search;
+            if(search){
+                // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+                // 注意： filter() 不会对空数组进行检测。
+                // 注意： filter() 不会改变原始数组。
+                return this.data.filter(data => {
+                    // some() 方法用于检测数组中的元素是否满足指定条件;
+                    // some() 方法会依次执行数组的每个元素：
+                    // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
+                    // 如果没有满足条件的元素，则返回false。
+                    // 注意： some() 不会对空数组进行检测。
+                    // 注意： some() 不会改变原始数组。
+                    return Object.keys(data).some(key => {
+                    //Object.keys()---如果处理对象，将返回一个可进行枚举的属性数组，注意，是返回一个数组，是通过属性名组成的数组
+                    //Object.keys()---参数：要返回其枚举自身属性的对象；  返回值：一个表示给定对象的所有可枚举属性的字符串数组
+                    // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
+                    // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
+                        return String(data[key]).toLowerCase().indexOf(search) > -1
+                    })
                 })
-            })
-        }
+            }
             return this.data
         }
     },
