@@ -28,13 +28,13 @@
                 <Input v-model="formValidate.author" placeholder="Enter author" />
             </FormItem>
             <FormItem label="价格" prop="price">
-                <Input v-model="formValidate.price" placeholder="Enter price" />
+                <Input v-model="formValidate.price" @on-change:="judge()" placeholder="Enter price" />
             </FormItem>
-            <FormItem label="总藏书量" prop="book_total">
+            <FormItem label="总藏书量" required prop="book_total">
                 <Input v-model="formValidate.book_total" placeholder="Enter book_total" />
             </FormItem>
             <FormItem label="库存" prop="inventory">
-                <Input v-model="formValidate.inventory" placeholder="Enter inventory" />
+                <Input v-model="formValidate.inventory" :disabled="true" placeholder="根据总量计算得出" />
             </FormItem>
             <FormItem>
                 <Button type="primary" @click="handleSubmit('formValidate')">确定</Button>
@@ -68,7 +68,7 @@
                 <Input v-model="formEdit.book_total" placeholder="Enter book_total" />
             </FormItem>
             <FormItem label="库存" prop="inventory">
-                <Input v-model="formEdit.inventory" placeholder="Enter inventory" />
+                <Input v-model="formEdit.inventory" :disabled="true" placeholder="根据总量计算得出" />
             </FormItem>
             <FormItem>
                 <Button type="primary" @click="handleEditSubmit('formEdit')">确定</Button>
@@ -99,6 +99,24 @@
 <script>
 export default {
     data(){
+        const validatePrice = (rule, value, callback) => {
+            if(value==''){
+                callback();
+            }else if (value<=0) {
+                callback(new Error('Must more than 0!'));
+            }else{
+                callback();
+            }
+        };
+        const validateBookTotal = (rule, value, callback) => {
+            if (value==='') {
+                callback(new Error('The book_total cannot be empty！'));
+            }else if(value<=0){
+                callback(new Error('Must more than 0!'));
+            }else{
+                callback();
+            }
+        };
         return{
             msg: '',
             search:'',
@@ -136,16 +154,18 @@ export default {
                     { required: true, message: 'The publisher cannot be empty', trigger: 'blur' }
                 ],
                 price: [
-                    { type :'number', message:　'请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
+                    {validator: validatePrice, trigger: 'blur'},
+                    // { type :'number', message:　'请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
                 ],
                 book_total: [
-                    { required: true, message: 'The book_total cannot be empty', trigger: 'blur' },
-                    { type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
+                    {validator: validateBookTotal,trigger: 'blur'},
+                    // { required: true, message: 'The book_total cannot be empty', trigger: 'blur' },
+                    // { type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
                 ],
-                inventory: [
-                    { required: true, message: 'The inventory cannot be empty', trigger: 'blur' },
-                    { type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
-                ],
+                // inventory: [
+                //     { required: true, message: 'The inventory cannot be empty', trigger: 'blur' },
+                //     { type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {return Number(value);}}
+                // ],
             },
             columns: [
                 {
@@ -173,7 +193,7 @@ export default {
                     title: '库存',
                     key: 'inventory'
                 },{
-                    title: 'Action',
+                    title: '操作',
                     slot: 'action',
                     width: 150,
                     align: 'center'
@@ -233,7 +253,7 @@ export default {
                       author:this.formValidate.author,
                       price:this.formValidate.price,
                       book_total:this.formValidate.book_total,
-                      inventory:this.formValidate.inventory,
+                      inventory:this.formValidate.book_total,//数量统一
                   };
                   fetch("api/bookms/server/book/add.php",{
                       method:"POST",
@@ -250,7 +270,7 @@ export default {
                           publisher:this.formValidate.publisher,
                           price:this.formValidate.price,
                           book_total:this.formValidate.book_total,
-                          inventory:this.formValidate.inventory,
+                          inventory:this.formValidate.book_total,
                       }),
                     }).then(res=> { 
                         return res.json();
@@ -269,7 +289,7 @@ export default {
                         }
                     });
                 } else {
-                    this.$Message.error('请完成必填项!');
+                    this.$Message.error('请按要求完成!');
                 }
             })
         },
@@ -289,7 +309,7 @@ export default {
                     publisher:this.formEdit.publisher,
                     price:this.formEdit.price,
                     book_total:this.formEdit.book_total,
-                    inventory:this.formEdit.inventory,
+                    inventory:this.formEdit.book_total,//############
                 }),
             }).then(res=> { 
                 return res.json();
@@ -341,7 +361,7 @@ export default {
             this.formEdit.publisher = this.data[index].publisher;
             this.formEdit.price = this.data[index].price;
             this.formEdit.book_total = this.data[index].book_total;
-            this.formEdit.inventory = this.data[index].inventory;
+            this.formEdit.inventory = "系统将根据计算修改";
         },
         remove (index) {
             fetch("api/bookms/server/book/delete.php",{

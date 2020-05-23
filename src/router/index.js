@@ -6,8 +6,8 @@ import Main from '../pages/main'
 
 import Manager from '../pages/manager'
 import Book from '../pages/book'
-import option from '../pages/option'
 import Reader from '../pages/reader'
+import option from '../pages/option'
 
 Vue.use(Router)
 
@@ -46,7 +46,7 @@ const router = new Router({
           path: '/option',
           name: 'option',
           component: option
-        },
+        }
       ]
     },
   ]

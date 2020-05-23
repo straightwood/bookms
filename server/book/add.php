@@ -11,10 +11,11 @@
     $publisher = $data["publisher"];
     $price = $data["price"];
     $book_total = $data["book_total"];
-    $inventory = $data["inventory"];
+    $inventory = $data["book_total"];
 
     $token = $data['Authorization'];
     require_once('../decodeToken.php');
+    
     if($tokenNum=='200'){
         $result_array[1] = ['code'=>'1','message'=>'登录成功！'];
         if($book_number != '' && $book_name != '' && $publisher != ''&& $book_total!= ''&& $inventory != ''){

@@ -2,7 +2,6 @@
   <div id="main">
         <div class="topButton">
             <Button type="primary" @click="addReader" class="addBtn">新增</Button>
-            <!-- <Button type="error">批量删除</Button> -->
             <Form class="searchBox">
                 <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
             </Form>
@@ -75,11 +74,6 @@
                 <Button type="error" size="small" @click="remove(index)">删除</Button>
             </template>
         </Table>
-        <!-- <Table
-            :data="tableData"
-            :columns="columns"
-            border
-        ></Table> -->
   </div>
 </template>
 
@@ -144,7 +138,7 @@ export default {
                     title: '联系方式',
                     key: 'telephone'
                 },{
-                    title: 'Action',
+                    title: '操作',
                     slot: 'action',
                     width: 150,
                     align: 'center'

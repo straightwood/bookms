@@ -17,29 +17,25 @@
                 <Sider breakpoint="md" collapsible :collapsed-width="78" v-model="isCollapsed">
                     <Menu :active-name="activeName" theme="dark" width="auto" :class="menuitemClasses">
                         <MenuItem name="manager" @click.native="handleManager">
-                            <Icon type="ios-person"></Icon>
-                            <span>管理员</span>
+                                <Icon type="ios-person"></Icon>
+                                <span>管理员</span>
                         </MenuItem>
                         <MenuItem name="reader" @click.native="handleReader">
-                            <Icon type="ios-people"></Icon>
-                            <span>读者信息</span>
+                                <Icon type="ios-people"></Icon>
+                                <span>读者信息</span>
                         </MenuItem>
                         <MenuItem name="book" @click.native="handleBook">
-                            <Icon type="ios-book"></Icon>
-                            <span>图书管理</span>
+                                <Icon type="ios-book"></Icon>
+                                <span>图书管理</span>
                         </MenuItem>
                         <MenuItem name="option" @click.native="handleOption" >
-                            <Icon type="ios-bookmarks"></Icon>
-                            <span>借还书操作</span>
+                                <Icon type="ios-bookmarks"></Icon>
+                                <span>借还书操作</span>
                         </MenuItem>
                     </Menu>
                     <div slot="trigger"></div>
                 </Sider>
                 <Layout :style="{padding: '0 24px 24px'}">
-                    <!-- <Breadcrumb :style="{margin: '24px 0',float:'left'}">
-                        <BreadcrumbItem>Home</BreadcrumbItem>
-                        <BreadcrumbItem to="/pages/manager">Components</BreadcrumbItem>
-                    </Breadcrumb> -->
                     <br>
                     <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
                         <router-view />
@@ -85,7 +81,7 @@ export default {
         },
         handleOption(){
             this.$router.push('./option');
-        }
+        },
     }
     
 }
