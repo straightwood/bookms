@@ -61,7 +61,7 @@
             <FormItem label="作者" prop="author">
                 <Input v-model="formEdit.author" placeholder="Enter author" />
             </FormItem>
-            <FormItem label="联系方式" prop="price">
+            <FormItem label="价格" prop="price">
                 <Input v-model="formEdit.price" placeholder="Enter price" />
             </FormItem>
             <FormItem label="总藏书量" prop="book_total">
@@ -202,14 +202,26 @@ export default {
     methods:{
         showList(){
             fetch('api/bookms/server/book/showList.php',{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),//token
+                }),
             }).then((res)=>{
                 return res.json();
             }).then((res)=>{
-                this.data = res[0];
-                this.totalNum = res[1];
-                // console.log(this.data) // res是最终的结果
+                if(res[2].code==1){
+                    this.data = res[0];
+                    this.totalNum = res[1];
+                }else{
+                    // alert(res[2].message);
+                    this.$Message.error(res[2].message);
+                    this.$router.push('./index');
+                }
             });
-            console.log(this.data)//#########有输出 列表不更新
         },
         handleSubmit (name) {
             this.$refs[name].validate((valid) => {
@@ -230,6 +242,7 @@ export default {
                           'Content-Type': 'application/json',
                       },
                       body:JSON.stringify({
+                          Authorization:localStorage.getItem('Authorization'),
                           book_number:this.formValidate.book_number,
                           category:this.formValidate.category,
                           book_name:this.formValidate.book_name,
@@ -239,17 +252,22 @@ export default {
                           book_total:this.formValidate.book_total,
                           inventory:this.formValidate.inventory,
                       }),
-                      }).then(res=> { 
-                          return res.json();
-                      }).then(res=>{
-                          if(res[0].code == 1){
-                              this.$Message.success(res[0].message);
-                              this.$refs[name].resetFields();
-                              this.data.push(info); //############声明info位置问题
-                          }else{
-                              this.$Message.error(res[0].message);
-                          }
-                      });
+                    }).then(res=> { 
+                        return res.json();
+                    }).then(res=>{
+                        if(res[1].code==1){
+                            if(res[0].code == 1){
+                                this.$Message.success(res[0].message);
+                                this.$refs[name].resetFields();                           
+                                this.data.push(info);//###########声明info位置问题
+                            }else{
+                                this.$Message.error(res[0].message);
+                            }
+                        }else{
+                            this.$Message.error(res[1].message);
+                            this.$router.push('./index');
+                        }
+                    });
                 } else {
                     this.$Message.error('请完成必填项!');
                 }
@@ -263,6 +281,7 @@ export default {
                     'Content-Type': 'application/json',
                 },
                 body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),
                     book_number:this.formEdit.book_number,
                     category:this.formEdit.category,
                     book_name:this.formEdit.book_name,
@@ -272,13 +291,19 @@ export default {
                     book_total:this.formEdit.book_total,
                     inventory:this.formEdit.inventory,
                 }),
-                }).then(res=> { 
-                    return res.json();
-                }).then(res=>{
-                if(res[0].code == 1){
-                    this.$Message.success(res[0].message);
+            }).then(res=> { 
+                return res.json();
+            }).then(res=>{
+                if(res[1].code==1){
+                    if(res[0].code == 1){
+                        this.$Message.success(res[0].message);
+                        this.data.splice(index, 1);
+                    }else{
+                        this.$Message.error(res[0].message);
+                    }
                 }else{
-                    this.$Message.error(res[0].message);
+                    this.$Message.error(res[1].message);
+                    this.$router.push('./index');
                 }
             });
         },
@@ -326,6 +351,7 @@ export default {
                     'Content-Type': 'application/json',
                 },
                 body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),
                     book_number:this.data[index].book_number,
                 }),
                 }).then(res=> { 

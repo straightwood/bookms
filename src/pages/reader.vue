@@ -173,11 +173,25 @@ export default {
     methods:{
         showList(){
             fetch('api/bookms/server/reader/showList.php',{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),//token
+                }),
             }).then((res)=>{
                 return res.json();
             }).then((res)=>{
-                this.data = res[0];
-                this.totalNum = res[1];
+                if(res[2].code==1){
+                    this.data = res[0];
+                    this.totalNum = res[1];
+                }else{
+                    // alert(res[2].message);
+                    this.$Message.error(res[2].message);
+                    this.$router.push('./index');
+                }
             });
         },
         handleSubmit (name) {
@@ -197,12 +211,57 @@ export default {
                             'Content-Type': 'application/json',
                         },
                         body:JSON.stringify({
-                            Authorization:localStorage.getItem('token'),//token
+                            Authorization:localStorage.getItem('Authorization'),//token
                             reader_number:this.formValidate.reader_number,
                             name:this.formValidate.name,
                             department:this.formValidate.department,
                             gender:this.formValidate.gender,
                             telephone:this.formValidate.telephone,
+                        }),
+                    }).then(res=> { 
+                        return res.json();
+                    }).then(res=>{
+                        if(res[1].code==1){
+                            if(res[0].code == 1){
+                                this.$Message.success(res[0].message);
+                                this.$refs[name].resetFields();                           
+                                this.data.push(info);
+                            }else{
+                                this.$Message.error(res[0].message);
+                            }
+                        }else{
+                            this.$Message.error(res[1].message);
+                            this.$router.push('./index');
+                        }
+                    });
+                } else {
+                    this.$Message.error('请完成必填项!');
+                }
+            })
+        },
+        handleEditSubmit(name){
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    var info = {
+                        reader_number:this.formEdit.reader_number,
+                        name:this.formEdit.name,
+                        gender:this.formEdit.gender,
+                        department:this.formEdit.department,
+                        telephone:this.formEdit.telephone,
+                    }
+                    fetch("api/bookms/server/reader/edit.php",{
+                        method:"POST",
+                        headers:{
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body:JSON.stringify({
+                            Authorization:localStorage.getItem('Authorization'),//token
+                            reader_number:this.formEdit.reader_number,
+                            name:this.formEdit.name,
+                            department:this.formEdit.department,
+                            gender:this.formEdit.gender,
+                            telephone:this.formEdit.telephone,
                         }),
                         }).then(res=> { 
                             return res.json();
@@ -210,52 +269,16 @@ export default {
                             if(res[1].code==1){
                                 if(res[0].code == 1){
                                     this.$Message.success(res[0].message);
-                                    this.$refs[name].resetFields();                           
-                                    this.data.push(info);
                                 }else{
                                     this.$Message.error(res[0].message);
                                 }
                             }else{
-                                console.log(res);
+                                this.$Message.error(res[1].message);
                                 this.$router.push('./index');
                             }
                         });
-                } else {
-                    this.$Message.error('请完成必填项!');
-                }
-            })
-        },
-        handleEditSubmit(){
-            var info = {
-                reader_number:this.formEdit.reader_number,
-                name:this.formEdit.name,
-                gender:this.formEdit.gender,
-                department:this.formEdit.department,
-                telephone:this.formEdit.telephone,
-            }
-            fetch("api/bookms/server/reader/edit.php",{
-                method:"POST",
-                headers:{
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body:JSON.stringify({
-                    reader_number:this.formEdit.reader_number,
-                    name:this.formEdit.name,
-                    department:this.formEdit.department,
-                    gender:this.formEdit.gender,
-                    telephone:this.formEdit.telephone,
-                }),
-                }).then(res=> { 
-                    return res.json();
-                }).then(res=>{
-                if(res[0].code == 1){
-                    this.$Message.success(res[0].message);
-                    // this.data[this.editIndex] = info;//#############
-                    // console.log(info.gender)
-                    // console.log(this.data[this.editIndex].gender)
                 }else{
-                    this.$Message.error(res[0].message);
+                    this.$Message.error('请完成必填项!');
                 }
             });
         },
@@ -299,17 +322,23 @@ export default {
                     'Content-Type': 'application/json',
                 },
                 body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),//token
                     reader_number:this.data[index].reader_number,
                 }),
                 }).then(res=> { 
                     return res.json();
                 }).then(res=>{
-                if(res[0].code == 1){
-                    this.$Message.success(res[0].message);
-                    this.data.splice(index, 1);
-                }else{
-                    this.$Message.error(res[0].message);
-                }
+                    if(res[1].code==1){
+                        if(res[0].code == 1){
+                            this.$Message.success(res[0].message);
+                            this.data.splice(index, 1);
+                        }else{
+                            this.$Message.error(res[0].message);
+                        }
+                    }else{
+                        this.$Message.error(res[1].message);
+                        this.$router.push('./index');
+                    }
             });
         },
     },

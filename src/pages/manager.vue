@@ -276,12 +276,25 @@ export default {
     methods:{
         showList(){
             fetch('api/bookms/server/manager/showList.php',{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),//token
+                }),
             }).then((res)=>{
                 return res.json();
             }).then((res)=>{
-                this.data = res[0];
-                this.totalNum = res[1];
-                // console.log(this.data) // res是最终的结果
+                if(res[2].code==1){
+                    this.data = res[0];
+                    this.totalNum = res[1];
+                }else{
+                    // alert(res[2].message);
+                    this.$Message.error(res[2].message);
+                    this.$router.push('./index');
+                }
             });
             // console.log(1111)//#########有输出 列表不更新
         },
@@ -301,7 +314,7 @@ export default {
                             'Content-Type': 'application/json',
                         },
                         body:JSON.stringify({
-                            // username:this.data[index],
+                            Authorization:localStorage.getItem('Authorization'),//token
                             manager_id:this.formValidate.manager_id,
                             name:this.formValidate.name,
                             password:this.formValidate.password,
@@ -310,12 +323,17 @@ export default {
                         }).then(res=> { 
                             return res.json();
                         }).then(res=>{
-                            if(res[0].code == 1){
-                                this.$Message.success(res[0].message);
-                                this.$refs[name].resetFields();                               
-                                this.data.push(info);
+                            if(res[1].code==1){
+                                if(res[0].code == 1){
+                                    this.$Message.success(res[0].message);
+                                    this.$refs[name].resetFields();                           
+                                    this.data.push(info);
+                                }else{
+                                    this.$Message.error(res[0].message);
+                                }
                             }else{
-                                this.$Message.error(res[0].message);
+                                this.$Message.error(res[1].message);
+                                this.$router.push('./index');
                             }
                         });
                 } else {
@@ -349,17 +367,21 @@ export default {
                     'Content-Type': 'application/json',
                 },
                 body:JSON.stringify({
-                    // username:this.data[index],
+                    Authorization:localStorage.getItem('Authorization'),
                     manager_id:this.data[index].manager_id,
                 }),
                 }).then(res=> { 
                     return res.json();
                 }).then(res=>{
-                if(res[0].code == 1){
-                    this.$Message.success(res[0].message);
-                    this.data.splice(index, 1);
+                if(res[1].code==1){
+                    if(res[0].code == 1){
+                        this.$Message.success(res[0].message);
+                    }else{
+                        this.$Message.error(res[0].message);
+                    }
                 }else{
-                    this.$Message.error(res[0].message);
+                    this.$Message.error(res[1].message);
+                    this.$router.push('./index');
                 }
             });
         },

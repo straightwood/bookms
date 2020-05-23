@@ -59,7 +59,7 @@ export default {
                         headers:{
                           'Accept': 'application/json',
                           'Content-Type': 'application/json',
-                          // 'Authorization':localStorage.getItem('token')
+                          // 'Authorization':localStorage.getItem('Authorization')
                         },
                         body:JSON.stringify({
                           Authorization:'',
@@ -72,7 +72,6 @@ export default {
                         if(res[0].code == 1){
                           this.userToken = res[0].token;
                           this.changeLogin({ Authorization: this.userToken });
-                          console.log(this.userToken);
                           this.$Message.success(res[0].message);
                           this.$router.push('/main')
                         }else{

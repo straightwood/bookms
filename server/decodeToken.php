@@ -1,6 +1,5 @@
 <?php
     // require_once('/reader/add.php');
-    $token='admin.1590142024.1590228424.7939dd87ae387c09b3201f4840abe237';
     $tokenNum = '';
     if(!isset($token) || empty($token)){
         $tokenNum = '400';
