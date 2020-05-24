@@ -22,7 +22,7 @@
       </TabPane>
       <TabPane label="还书" name="name2" style="height:500px">
         <br>
-        <Form ref="formReturn" :model="formBorrow" :rules="ruleValidate" :label-width="100"  inline>
+        <Form ref="formReturn" :model="formReturn" :rules="ruleValidate" :label-width="100"  inline>
             <FormItem label="读者编号" prop="reader_number">
                 <Input v-model="formReturn.reader_number" placeholder="Enter reader_number" />
             </FormItem>
@@ -78,7 +78,7 @@ export default {
     },
     time2(e){
       this.formReturn.date = e;
-      console.log(this.formReturn.date);
+      console.log(this.formReturn);
     },
     borrowSubmit(name){
       this.$refs[name].validate((valid) => {

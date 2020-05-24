@@ -6,9 +6,7 @@
     $reader_number = $data['reader_number'];
     $book_number = $data["book_number"];
     $date = $data["date"];
-    // $reader_number="1001";
-    // $book_number= "1";
-    // $date= "2020-05-13 00:00:00";
+
     $token = $data['Authorization'];
     require_once('../decodeToken.php');
     if($tokenNum=='200'){
