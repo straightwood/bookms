@@ -8,7 +8,7 @@
                         图书管理系统
                     </div>
                     <div class="layout-nav">
-                        <Icon type="ios-power" style="color:white" />
+                        <Icon type="ios-power" style="color:white" @click="logout"/>
                     </div>
                 </Menu>
             </Header>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 export default {
     data () {
         return {
@@ -70,6 +71,11 @@ export default {
             // })
         },
     methods:{
+        ...mapMutations(['changeLogin']),
+        logout(){
+            this.changeLogin({ Authorization: '' });
+            this.$router.push('./index')
+        },
         handleManager(){
             this.$router.push('./manager');
         },
