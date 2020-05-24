@@ -13,18 +13,22 @@
         if($book_number != ''){
             $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
             if($conn != null){
-                $sql = "delete FROM book where book_number = '$book_number'";
-                $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql
-
-                $check = "select * FROM book where book_number = '$book_number'";
-                $check_result = mysqli_query($conn, $check);//执行
-                $resArray =mysqli_fetch_array($check_result);//从$result中取一行
-                
-                if($resArray["num_rows"] == null ){
-                    $result_array[0] = ['code'=>'1','message'=>'删除成功！'];
+                $sql = "SELECT * FROM borrow_book WHERE book_number = '$book_number'";
+                $result = mysqli_query($conn, $sql);
+                $resNum =  mysqli_num_rows($result);//检查借书记录
+                if($resNum==0){
+                    $sql = "delete FROM book where book_number = '$book_number'";
+                    $result = mysqli_query($conn, $sql);
+                    $result_num = mysqli_affected_rows($conn);
+                    if($result_num>=1){
+                        $result_array[0] = ['code'=>'1','message'=>'删除成功！'];
+                    }else{
+                        $result_array[0] = ['code'=>'0','message'=>'删除失败！'];
+                    }
                 }else{
-                    $result_array[0] = ['code'=>'0','message'=>'删除失败！'];
+                    $result_array[0] = ['code'=>'0','message'=>'有借出记录，暂不可删！'];
                 }
+                
                 mysqli_close($conn);
             }
         }
