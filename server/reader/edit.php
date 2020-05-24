@@ -22,10 +22,6 @@
                 WHERE reader_number = '$reader_number'";
                 $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql  
                 $result_num = mysqli_affected_rows($conn);
-                $check = "SELECT * FROM reader WHERE reader_number = '$reader_number'";
-                $check_result = mysqli_query($conn, $check);
-                $resArray = mysqli_fetch_array($check_result);//从$result中取一行
-
                 if($result_num>=1){
                     $result_array[0] = ['code'=>'1','message'=>'修改成功！'];
                 }else{

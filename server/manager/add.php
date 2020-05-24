@@ -23,7 +23,7 @@
                 $resNum = mysqli_num_rows($result);//从$result中取一行
 
                 if($resNum==0){
-                    $sql = "INSERT INTO manager (manager_id,name,password,telephone) VALUES ('$manager_id','$name','$password','$telephone')";
+                    $sql = "INSERT INTO manager (manager_id,name,password,telephone) VALUES ('$manager_id','$name',password('$password'),'$telephone')";
                     $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
 
                     $check = "select * FROM manager where manager_id = '$manager_id'";

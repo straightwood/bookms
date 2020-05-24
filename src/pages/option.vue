@@ -11,7 +11,7 @@
                 <Input v-model="formBorrow.book_number" placeholder="Enter book_number" />
             </FormItem>
            <FormItem label="日期" prop="date"> <!-- 注意返回数据的方法 -->
-                <DatePicker type="datetime" @on-change="time" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time"></DatePicker>
+                <DatePicker type="datetime" @on-change="time1" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time"></DatePicker>
                 <!-- <Input v-model="formBorrow.date" placeholder="Enter date" /> -->
             </FormItem>
             <FormItem>
@@ -22,7 +22,7 @@
       </TabPane>
       <TabPane label="还书" name="name2" style="height:500px">
         <br>
-        <Form ref="formReturn" :model="formReturn" :rules="ruleValidate" :label-width="100"  inline>
+        <Form ref="formReturn" :model="formBorrow" :rules="ruleValidate" :label-width="100"  inline>
             <FormItem label="读者编号" prop="reader_number">
                 <Input v-model="formReturn.reader_number" placeholder="Enter reader_number" />
             </FormItem>
@@ -30,8 +30,7 @@
                 <Input v-model="formReturn.book_number" placeholder="Enter book_number" />
             </FormItem>
             <FormItem label="日期" prop="date">
-                <DatePicker type="datetime" @on-change="time" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time"></DatePicker>
-                <!-- <Input v-model="formReturn.date" placeholder="Enter date" /> -->
+                <DatePicker type="datetime" @on-change="time2" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time"></DatePicker>
             </FormItem>
             <FormItem>
                 <Button type="primary" @click="returnSubmit('formReturn')">确定</Button>
@@ -73,13 +72,54 @@ export default {
     }
   },
   methods:{
-    time(e){
+    time1(e){
       this.formBorrow.date = e;
+      console.log(this.formBorrow.date);
+    },
+    time2(e){
+      this.formReturn.date = e;
+      console.log(this.formReturn.date);
     },
     borrowSubmit(name){
       this.$refs[name].validate((valid) => {
         if (valid) {
           fetch("api/bookms/server/option/borrow.php",{
+              method:"POST",
+              headers:{
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+              },
+              body:JSON.stringify({
+                  Authorization:localStorage.getItem('Authorization'),//token
+                  reader_number:this.formBorrow.reader_number,
+                  book_number:this.formBorrow.book_number,
+                  date:this.formBorrow.date,
+              }),
+          }).then(res=> { 
+              return res.json();
+          }).then(res=>{
+            console.log(res)
+              if(res[1].code==1){
+                  if(res[0].code == 1){
+                      this.$Message.success(res[0].message);
+                      this.$refs[name].resetFields();                           
+                  }else{
+                      this.$Message.error(res[0].message);
+                  }
+              }else{
+                  this.$Message.error(res[1].message);
+                  this.$router.push('./index');
+              }
+          });
+      } else {
+          this.$Message.error('请完成必填项!');
+        }
+      })
+    },
+    returnSubmit(name){
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          fetch("api/bookms/server/option/return.php",{
               method:"POST",
               headers:{
                   'Accept': 'application/json',
@@ -94,11 +134,11 @@ export default {
           }).then(res=> { 
               return res.json();
           }).then(res=>{
+            console.log(res)
               if(res[1].code==1){
                   if(res[0].code == 1){
                       this.$Message.success(res[0].message);
                       this.$refs[name].resetFields();                           
-                      this.data.push(info);
                   }else{
                       this.$Message.error(res[0].message);
                   }
@@ -123,10 +163,5 @@ export default {
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  /* -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; */
-  /* text-align: center; */
-  /* color: #198290; */
-  /* margin-top: 60px; */
 }
 </style>

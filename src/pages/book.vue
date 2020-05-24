@@ -64,7 +64,7 @@
             <FormItem label="价格" prop="price">
                 <Input v-model="formEdit.price" placeholder="Enter price" />
             </FormItem>
-            <FormItem label="总藏书量" prop="book_total">
+            <FormItem label="总藏书量" required prop="book_total">
                 <Input v-model="formEdit.book_total" placeholder="Enter book_total" />
             </FormItem>
             <FormItem label="库存" prop="inventory">
@@ -246,15 +246,6 @@ export default {
         handleSubmit (name) {
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                  var info = {
-                      book_number:this.formValidate.book_number,
-                      category:this.formValidate.category,
-                      book_name:this.formValidate.book_name,
-                      author:this.formValidate.author,
-                      price:this.formValidate.price,
-                      book_total:this.formValidate.book_total,
-                      inventory:this.formValidate.book_total,//数量统一
-                  };
                   fetch("api/bookms/server/book/add.php",{
                       method:"POST",
                       headers:{
@@ -278,8 +269,8 @@ export default {
                         if(res[1].code==1){
                             if(res[0].code == 1){
                                 this.$Message.success(res[0].message);
-                                this.$refs[name].resetFields();                           
-                                this.data.push(info);//###########声明info位置问题
+                                this.$refs[name].resetFields();
+                                this.showList();                          
                             }else{
                                 this.$Message.error(res[0].message);
                             }
@@ -309,13 +300,14 @@ export default {
                     publisher:this.formEdit.publisher,
                     price:this.formEdit.price,
                     book_total:this.formEdit.book_total,
-                    inventory:this.formEdit.book_total,//############
+                    // inventory:this.formEdit.book_total,//#########计算
                 }),
             }).then(res=> { 
                 return res.json();
             }).then(res=>{
                 if(res[1].code==1){
                     if(res[0].code == 1){
+                        this.showList();
                         this.$Message.success(res[0].message);
                         this.data.splice(index, 1);
                     }else{

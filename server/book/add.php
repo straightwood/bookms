@@ -33,11 +33,11 @@
                         $sql = "INSERT INTO book (book_number,category,book_name,publisher,author,price,book_total,inventory) 
                             VALUES ('$book_number','$category','$book_name','$publisher','$author','$price','$book_total','$inventory')";
                     }
-                    $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
+                    $result = mysqli_query($conn, $sql);
 
                     $check = "select * FROM book where book_number = '$book_number'";
                     $check_result = mysqli_query($conn, $check);//$conn->query($sql);//执行$sql   
-                    $resNum = mysqli_num_rows($check_result);//从$result中取一行
+                    $resNum = mysqli_num_rows($check_result);
                     if($resNum!=0){
                         $result_array[0] = ['code'=>'1','message'=>'添加成功！'];
                     }else{

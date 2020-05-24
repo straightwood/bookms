@@ -148,7 +148,7 @@ export default {
                                             'Content-Type': 'application/json',
                                         },
                                         body:JSON.stringify({
-                                            // username:this.data[index],
+                                            Authorization:localStorage.getItem('Authorization'),
                                             manager_id:this.data[index].manager_id,
                                             name:this.data[index].name,
                                             telephone:this.data[index].telephone,
@@ -156,11 +156,17 @@ export default {
                                         }).then(res=> { 
                                             return res.json();
                                         }).then(res=>{
-                                        if(res[0].code == 1){
-                                            this.$Message.success(res[0].message);
-                                        }else{
-                                            this.$Message.error(res[0].message);
-                                        }
+                                            if(res[1].code==1){
+                                                if(res[0].code == 1){
+                                                    this.$Message.success(res[0].message);
+                                                    this.showList();
+                                                }else{
+                                                    this.$Message.error(res[0].message);
+                                                }
+                                            }else{
+                                                this.$Message.error(res[1].message);
+                                                this.$router.push('./index');
+                                            }
                                     });
                                 }
                                 }
@@ -214,17 +220,22 @@ export default {
                                                     'Content-Type': 'application/json',
                                                 },
                                                 body:JSON.stringify({
-                                                    // username:this.data[index],
+                                                    Authorization:localStorage.getItem('Authorization'),
                                                     manager_id:this.data[index].manager_id,
                                                 }),
-                                                }).then(res=> { 
-                                                    return res.json();
-                                                }).then(res=>{
-                                                if(res[0].code == 1){
-                                                    this.$Message.success(res[0].message);
-                                                    this.data.splice(index, 1);
+                                            }).then(res=> { 
+                                                return res.json();
+                                            }).then(res=>{
+                                                if(res[1].code==1){
+                                                    if(res[0].code == 1){
+                                                        this.$Message.success(res[0].message);
+                                                        this.data.splice(index, 1);
+                                                    }else{
+                                                        this.$Message.error(res[0].message);
+                                                    }
                                                 }else{
-                                                    this.$Message.error(res[0].message);
+                                                    this.$Message.error(res[1].message);
+                                                    this.$router.push('./index');
                                                 }
                                             });
                                         },
@@ -291,22 +302,14 @@ export default {
                     this.data = res[0];
                     this.totalNum = res[1];
                 }else{
-                    // alert(res[2].message);
                     this.$Message.error(res[2].message);
                     this.$router.push('./index');
                 }
             });
-            // console.log(1111)//#########有输出 列表不更新
         },
         handleSubmit (name) {
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                    var info = {
-                        manager_id:this.formValidate.manager_id,
-                        name:this.formValidate.name,
-                        password:this.formValidate.password,
-                        telephone:this.formValidate.telephone,
-                    }
                     fetch("api/bookms/server/manager/add.php",{
                         method:"POST",
                         headers:{
@@ -327,7 +330,7 @@ export default {
                                 if(res[0].code == 1){
                                     this.$Message.success(res[0].message);
                                     this.$refs[name].resetFields();                           
-                                    this.data.push(info);
+                                    this.showList();
                                 }else{
                                     this.$Message.error(res[0].message);
                                 }
@@ -350,41 +353,32 @@ export default {
         addManager(){
             this.showForm = true;
         },
-        // show (index) {
-        //     this.$Modal.info({
-        //         title: 'Manager Info',
-        //         content: `编号：${this.data[index].manager_id}<br>姓名：${this.data[index].name}<br>电话号码：${this.data[index].telephone}`
-        //     })
+        // remove (index) {
+        //     fetch("api/bookms/server/manager/delete.php",{
+        //         method:"POST",
+        //         headers:{
+        //             'Accept': 'application/json',
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body:JSON.stringify({
+        //             Authorization:localStorage.getItem('Authorization'),
+        //             manager_id:this.data[index].manager_id,
+        //         }),
+        //     }).then(res=> { 
+        //         return res.json();
+        //     }).then(res=>{
+        //         if(res[1].code==1){
+        //             if(res[0].code == 1){
+        //                 this.$Message.success(res[0].message);
+        //             }else{
+        //                 this.$Message.error(res[0].message);
+        //             }
+        //         }else{
+        //             this.$Message.error(res[1].message);
+        //             this.$router.push('./index');
+        //         }
+        //     });
         // },
-        remove (index) {
-            // this.data.splice(index, 1);
-            // console.log(this.data.splice(index, 1)[0].name);
-            // console.log(this.data[index].manager_id);
-            fetch("api/bookms/server/manager/delete.php",{
-                method:"POST",
-                headers:{
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body:JSON.stringify({
-                    Authorization:localStorage.getItem('Authorization'),
-                    manager_id:this.data[index].manager_id,
-                }),
-                }).then(res=> { 
-                    return res.json();
-                }).then(res=>{
-                if(res[1].code==1){
-                    if(res[0].code == 1){
-                        this.$Message.success(res[0].message);
-                    }else{
-                        this.$Message.error(res[0].message);
-                    }
-                }else{
-                    this.$Message.error(res[1].message);
-                    this.$router.push('./index');
-                }
-            });
-        },
         renderTableColumn (editname, columnName, h, { row, index }) {
             let edit
             if (this.editTableIndex === index) {

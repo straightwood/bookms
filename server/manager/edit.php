@@ -22,12 +22,8 @@
                 $sql = "UPDATE manager SET name = '$name', telephone = '$telephone'
                 WHERE manager_id = '$manager_id'";
                 $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql  
-                
-                $check = "SELECT * FROM manager WHERE manager_id = '$manager_id'";
-                $check_result = mysqli_query($conn, $check);
-                $resArray = mysqli_fetch_array($check_result);//从$result中取一行
-
-                if($resArray['name']==$name && $resArray['telephone']==$telephone){
+                $result_num = mysqli_affected_rows($conn);
+                if($result_num>=1){
                     $result_array[0] = ['code'=>'1','message'=>'修改成功！'];
                 }else{
                     $result_array[0] = ['code'=>'0','message'=>'修改失败！'];
