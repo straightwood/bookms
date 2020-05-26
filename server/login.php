@@ -7,9 +7,6 @@
     $username = $data['username'];
     $password = $data["password"];
 
-    // $username = 'admin';
-    // $password = '123123';
-
     require_once('encodeToken.php');//生成token
 
     if($username != '' && $password != ''){
@@ -21,10 +18,8 @@
             $sql = "select * FROM manager 
                     where manager_id = '$username' and password = password($password)";
             $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
-            $row = mysqli_fetch_array($result);
-
             if (mysqli_num_rows($result) == 1) {
-                $row = mysqli_fetch_array($result);
+                // $row = mysqli_fetch_array($result);
                 $result_array[0] = ['token'=>$token,'code'=>'1','message'=>'登陆成功!'];
 			 	
             }else{

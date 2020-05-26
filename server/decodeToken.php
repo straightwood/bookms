@@ -1,11 +1,7 @@
 <?php
-    // require_once('/reader/add.php');
     $tokenNum = '';
     if(!isset($token) || empty($token)){
         $tokenNum = '400';
-//      $msg['code']='400';
-//      $msg['msg']='非法请求';
-//      return json_encode($msg,JSON_UNESCAPED_UNICODE);
     }else{
         $explode = explode('.',$token);//以.分割token为数组
    
@@ -16,28 +12,13 @@
 
             if(time() > $explode[2]){
                 $tokenNum = '401';
-                // $msg['code']='401';
-                // $msg['msg']='Token已过期,请重新登录';
-                // return json_encode($msg,JSON_UNESCAPED_UNICODE);
             }else if ($true_signature == $explode[3]){
                 $tokenNum = '200';
-            //     $msg['code']='200';
-            //     $msg['msg']='Token合法';
-            //     return json_encode($msg,JSON_UNESCAPED_UNICODE);
             }else{
                 $tokenNum = '400';
-        //         $msg['code']='400';
-        //         $msg['msg']='Token不合法';
-        //         return json_encode($msg,JSON_UNESCAPED_UNICODE);
             }
         }else{
             $tokenNum = '400';
-        //     $msg['code']='400';
-        //     $msg['msg']='Token不合法';
-        //     return json_encode($msg,JSON_UNESCAPED_UNICODE);
         }
     }
-
-    
-
 ?>

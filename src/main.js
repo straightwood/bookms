@@ -9,10 +9,9 @@ import store from './store/index'
 import ViewUI from 'view-design'
 import 'view-design/dist/styles/iview.css'
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 Vue.use(VueRouter);//引入router
 Vue.use(ViewUI);//引入view
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
