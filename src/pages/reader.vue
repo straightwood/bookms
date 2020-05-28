@@ -2,8 +2,27 @@
   <div id="main">
         <div class="topButton">
             <Button type="primary" @click="addReader" class="addBtn">新增</Button>
-            <Form class="searchBox">
+            <!-- <Form class="searchBox">
                 <Input type="text" v-model="search" placeholder="Search..." icon="ios-search" />
+            </Form> -->
+            <Form :model="formSearch" :label-width="60" inline>
+                <FormItem label="查询项">
+                    <Select v-model="formSearch.select">
+                        <Option value="reader_number">编号</Option>
+                        <Option value="name">姓名</Option>
+                        <Option value="department">学院</Option>
+                        <Option value="gender">性别</Option>
+                        <Option value="telephone">电话</Option>
+                    </Select>
+                </FormItem>
+                <FormItem label="输入">
+                    <Input v-model="formSearch.input" placeholder="Enter something..."></Input>
+                </FormItem>
+                <FormItem>
+                    <!-- <Icon type="ios-search" /> -->
+                    <Button type="primary" @click="handlesearch">查询</Button>
+                    <!--<Button style="margin-left: 8px">Cancel</Button> -->
+                </FormItem>
             </Form>
         </div>
 
@@ -87,6 +106,10 @@ export default {
             showEditForm:false,//编辑信息的表单
             editIndex:-1,//正在编辑的条目下标
             data: [],
+            formSearch: {
+                input: '',
+                select: '',
+            },
             genderList: [
               {
                 value: '男',
@@ -188,16 +211,34 @@ export default {
                 }
             });
         },
+        handlesearch(){
+            fetch("api/bookms/server/reader/search.php",{
+                method:"POST",
+                headers:{
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    Authorization:localStorage.getItem('Authorization'),//token
+                    select:this.formSearch.select,
+                    input:this.formSearch.input,
+                }),
+            }).then((res)=>{
+                return res.json();
+            }).then((res)=>{
+                if(res[2].code==1){
+                    this.data = res[0];
+                    this.totalNum = res[1];
+                }else{
+                    // alert(res[2].message);
+                    this.$Message.error(res[2].message);
+                    this.$router.push('./index');
+                }
+            });
+        },
         handleSubmit (name) {
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                    var info = {
-                        reader_number:this.formValidate.reader_number,
-                        name:this.formValidate.name,
-                        gender:this.formValidate.gender,
-                        department:this.formValidate.department,
-                        telephone:this.formValidate.telephone,
-                    }
                     fetch("api/bookms/server/reader/add.php",{
                         method:"POST",
                         headers:{
@@ -218,8 +259,8 @@ export default {
                         if(res[1].code==1){
                             if(res[0].code == 1){
                                 this.$Message.success(res[0].message);
-                                this.$refs[name].resetFields();                           
-                                this.data.push(info);
+                                this.$refs[name].resetFields();   
+                                this.showList();                        
                             }else{
                                 this.$Message.error(res[0].message);
                             }
@@ -236,13 +277,6 @@ export default {
         handleEditSubmit(name){
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                    var info = {
-                        reader_number:this.formEdit.reader_number,
-                        name:this.formEdit.name,
-                        gender:this.formEdit.gender,
-                        department:this.formEdit.department,
-                        telephone:this.formEdit.telephone,
-                    }
                     fetch("api/bookms/server/reader/edit.php",{
                         method:"POST",
                         headers:{
@@ -263,6 +297,7 @@ export default {
                             if(res[1].code==1){
                                 if(res[0].code == 1){
                                     this.$Message.success(res[0].message);
+                                    this.showList(); 
                                 }else{
                                     this.$Message.error(res[0].message);
                                 }

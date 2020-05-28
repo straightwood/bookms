@@ -14,7 +14,7 @@
             $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
             if($conn != null){
                 $sql = "delete FROM manager where manager_id = '$manager_id'";
-                $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql
+                $result = mysqli_query($conn, $sql);
                 $result_num = mysqli_affected_rows($conn);    
                 if($result_num>=1){
                     $result_array[0] = ['code'=>'1','message'=>'删除成功！'];

@@ -20,15 +20,16 @@
             if($conn != null){
                 $sql = "select * FROM manager where manager_id = '$manager_id'";
                 $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql   
-                $resNum = mysqli_num_rows($result);//从$result中取一行
+                $resNum = mysqli_num_rows($result);
 
                 if($resNum==0){
-                    $sql = "INSERT INTO manager (manager_id,name,password,telephone) VALUES ('$manager_id','$name',password('$password'),'$telephone')";
-                    $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
+                    $sql = "INSERT INTO manager (manager_id,name,password,telephone) 
+                            VALUES ('$manager_id','$name',password('$password'),'$telephone')";
+                    $result = mysqli_query($conn, $sql);
 
                     $check = "select * FROM manager where manager_id = '$manager_id'";
-                    $check_result = mysqli_query($conn, $check);//$conn->query($sql);//执行$sql   
-                    $resNum = mysqli_num_rows($check_result);//从$result中取一行
+                    $check_result = mysqli_query($conn, $check);  
+                    $resNum = mysqli_num_rows($check_result);
                     if($resNum!=0){
                         $result_array[0] = ['code'=>'1','message'=>'添加成功！'];
                     }else{
