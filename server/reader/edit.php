@@ -18,9 +18,10 @@
         if($reader_number != '' && $name != '' && $gender != ''){
             $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
             if($conn != null){
-                $sql = "UPDATE reader SET name = '$name', department = '$department',gender = '$gender',telephone = '$telephone'
-                WHERE reader_number = '$reader_number'";
-                $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql  
+                $sql = "UPDATE reader SET name = '$name', department = '$department',
+                            gender = '$gender',telephone = '$telephone'
+                        WHERE reader_number = '$reader_number'";
+                $result = mysqli_query($conn, $sql);  
                 $result_num = mysqli_affected_rows($conn);
                 if($result_num>=1){
                     $result_array[0] = ['code'=>'1','message'=>'修改成功！'];

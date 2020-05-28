@@ -23,7 +23,8 @@
                 $resNum = mysqli_num_rows($result);//从$result中取一行
     
                 if($resNum==0){
-                    $sql = "INSERT INTO reader (reader_number,name,department,gender,telephone) VALUES ('$reader_number','$name','$department','$gender','$telephone')";
+                    $sql = "INSERT INTO reader (reader_number,name,department,gender,telephone) 
+                            VALUES ('$reader_number','$name','$department','$gender','$telephone')";
                     $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
     
                     $check = "select * FROM reader where reader_number = '$reader_number'";

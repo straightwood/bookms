@@ -18,7 +18,7 @@
                 $resNum =  mysqli_num_rows($result);//检查借书记录
                 if($resNum==0){
                     $sql = "delete FROM reader where reader_number = '$reader_number'";
-                    $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql
+                    $result = mysqli_query($conn, $sql);
                     $result_num = mysqli_affected_rows($conn);
                     if($result_num>=1){
                         $result_array[0] = ['code'=>'1','message'=>'删除成功！'];

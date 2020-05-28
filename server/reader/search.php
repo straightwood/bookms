@@ -19,7 +19,7 @@
         $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
         if($conn != null){
             $sql = "select * FROM reader where $select='$input'";
-            $result = mysqli_query($conn, $sql);//$conn->query($sql);//执行$sql 
+            $result = mysqli_query($conn, $sql);
             $resArray = mysqli_fetch_all($result,MYSQL_ASSOC);
             $resNum = mysqli_num_rows($result);
 

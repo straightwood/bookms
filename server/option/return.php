@@ -19,7 +19,8 @@
                 $resArray = mysqli_fetch_array($result);
                 $pre_inventory = $resArray['inventory'];//检查库存
 
-                $sql = "SELECT * FROM borrow_book WHERE reader_number = '$reader_number' AND book_number = '$book_number'";
+                $sql = "SELECT * FROM borrow_book 
+                        WHERE reader_number = '$reader_number' AND book_number = '$book_number'";
                 $result = mysqli_query($conn, $sql);
                 $resNum =  mysqli_num_rows($result);//检查借书记录
 
@@ -31,7 +32,8 @@
 
                     if($result_num>=1){//换书表更新成功
                         $now_inventory = $pre_inventory+1;
-                        $sql = "UPDATE book SET inventory='$now_inventory' WHERE book_number = '$book_number'";
+                        $sql = "UPDATE book SET inventory='$now_inventory' 
+                                WHERE book_number = '$book_number'";
                         $result = mysqli_query($conn, $sql);
                         $result_array[0] = ['code'=>'1','message'=>'成功还书！'];
                     }else{
