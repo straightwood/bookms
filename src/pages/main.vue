@@ -69,7 +69,7 @@ export default {
                 this.activeName = this.$route.path.slice(1)
                 // this.$refs.activeName.updateActiveName()
             // })
-        },
+    },
     methods:{
         ...mapMutations(['changeLogin']),
         logout(){
